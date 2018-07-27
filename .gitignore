@@ -39,4 +39,4 @@
 *.sav
 
 #Local
-./rpi/FacialRecognitionProject/dataset/
+/rpi/FacialRecognitionProject/dataset
