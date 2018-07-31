@@ -4,7 +4,6 @@
 *.out
 
 #Other
-*.py
 *.pl
 *.swp
 *.zip
@@ -40,5 +39,3 @@
 *.sav
 
 #Local
-test.m
-initial_values.m
