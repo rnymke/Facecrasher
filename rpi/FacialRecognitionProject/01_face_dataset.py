@@ -16,7 +16,8 @@ cam = cv2.VideoCapture(0)
 cam.set(3, 640) # set video width
 cam.set(4, 480) # set video height
 
-face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+cascadePath = "haarcascade_frontalface_default.xml"
+face_detector = cv2.CascadeClassifier(cascadePath)
 
 # For each person, enter one numeric face id
 face_id = input('\n enter user id end press <return> ==>  ')
@@ -29,9 +30,10 @@ maxImgSamples = 120
 while(True):
 
     ret, img = cam.read()
-    img = cv2.flip(img, -1) # flip video image vertically
+    #img = cv2.flip(img, -1) # flip video image vertically
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_detector.detectMultiScale(gray, 1.3, 5)
+    print(faces)
 
     for (x,y,w,h) in faces:
 
