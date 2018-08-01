@@ -20,10 +20,6 @@ host = '192.168.1.101'
 port = 8003
 s.connect((host, port))
 
-#import serial
-
-#ser = serial.Serial('/dev/ttyACM0', 4800)
-
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 trainerPath = "../../resources/models/haar_frontal/trainer.yml"
 recognizer.read(trainerPath)

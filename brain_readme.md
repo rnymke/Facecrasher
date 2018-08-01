@@ -4,7 +4,7 @@
 
 2. Install necessary packages by copy-pasting the following into your terminal
     ```
-    python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose opencv-contrib-python
+    python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose opencv-contrib-python imutils
     ```
 Note if you python 2 installed previously use `py` instead of `python`.
 
