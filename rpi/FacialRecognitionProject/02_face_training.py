@@ -19,7 +19,8 @@ import os
 path = 'dataset'
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
-detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml");
+cascadePath = "../../resources/models/haar_frontal/haarcascade_frontalface_default.xml"
+detector = cv2.CascadeClassifier(cascadePath);
 
 # function to get the images and label data
 def getImagesAndLabels(path):
@@ -47,7 +48,8 @@ faces,ids = getImagesAndLabels(path)
 recognizer.train(faces, np.array(ids))
 
 # Save the model into trainer/trainer.yml
-recognizer.write('trainer/trainer.yml') # recognizer.save() worked on Mac, but not on Pi
+trainerPath = "../../resources/models/haar_frontal/trainer.yml"
+recognizer.write(trainerPath) # recognizer.save() worked on Mac, but not on Pi
 
 # Print the numer of faces trained and end program
 print("\n [INFO] {0} faces trained. Exiting Program".format(len(np.unique(ids))))

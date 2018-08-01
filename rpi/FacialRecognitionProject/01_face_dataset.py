@@ -16,7 +16,7 @@ cam = cv2.VideoCapture(0)
 cam.set(3, 640) # set video width
 cam.set(4, 480) # set video height
 
-cascadePath = "haarcascade_frontalface_default.xml"
+cascadePath = "../../resources/models/haar_frontal/haarcascade_frontalface_default.xml"
 face_detector = cv2.CascadeClassifier(cascadePath)
 
 # For each person, enter one numeric face id
