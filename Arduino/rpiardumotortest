@@ -1,0 +1,189 @@
+/*****************************************************
+*        Arduino example for MD25 and LCD03          *
+*    MD25 is controlled using I2C and the LCD03      *
+*            is controlled using serial              *
+*                                                    *
+*              By James Henderson 2012               *
+*****************************************************/
+
+#include <Wire.h>
+
+#define CMD                 (byte)0x00                        // Values of 0 eing sent using write have to be cast as a byte to stop them being misinterperted as NULL
+                                                              // This is a but with arduino 1
+#define MD25ADDRESS         0x58                              // Address of the MD25
+#define SOFTWAREREG         0x0D                              // Byte to read the software version
+#define SPEED1              (byte)0x00                        // Byte to send speed to first motor
+#define SPEED2              0x01                              // Byte to send speed to second motor
+#define ENCODERONE          0x02                              // Byte to read motor encoder 1
+#define ENCODERTWO          0x06                              // Byte to read motor encoder 2
+#define VOLTREAD            0x0A                              // Byte to read battery volts
+#define RESETENCODERS       0x20
+
+int moveCommand = 0;
+int command = 0;
+
+void setup(){
+  Wire.begin();
+  Serial.begin(4800);
+  delay(100);                                               // Wait for everything to power up
+
+  encodeReset();                                            // Cals a function that resets the encoder values to 0
+}
+
+void loop(){
+
+  moveCommand = getNavigationComand();
+
+  //Serial.println("read command is");
+  //Serial.println(moveCommand);
+
+  switch (moveCommand)
+  {
+    case 1:
+      moveForward();
+    break;
+    case 2:
+      moveBackward();
+    break;
+    case 3:
+      turnLeft();
+    break;
+    case 4:
+      turnRight();
+    break;
+  }
+  delay(100);
+  stopMotor();
+}
+
+void encodeReset(){                                        // This function resets the encoder values to 0
+  Wire.beginTransmission(MD25ADDRESS);
+  Wire.write(16);
+  Wire.write(0x20);                                        // Putting the value 0x20 to reset encoders
+  Wire.endTransmission();
+}
+
+long encoder1(){                                            // Function to read and display value of encoder 1 as a long
+  Wire.beginTransmission(MD25ADDRESS);                      // Send byte to get a reading from encoder 1
+  Wire.write(ENCODERONE);
+  Wire.endTransmission();
+
+  Wire.requestFrom(MD25ADDRESS, 4);                         // Request 4 bytes from MD25
+  while(Wire.available() < 4);                              // Wait for 4 bytes to arrive
+  long poss1 = Wire.read();                                 // First byte for encoder 1, HH.
+  poss1 <<= 8;
+  poss1 += Wire.read();                                     // Second byte for encoder 1, HL
+  poss1 <<= 8;
+  poss1 += Wire.read();                                     // Third byte for encoder 1, LH
+  poss1 <<= 8;
+  poss1  +=Wire.read();                                     // Fourth byte for encoder 1, LL
+  delay(50);                                                // Wait for everything to make sure everything is sent
+  return(poss1);
+}
+
+long encoder2(){                                            // Function to read and display velue of encoder 2 as a long
+  Wire.beginTransmission(MD25ADDRESS);
+  Wire.write(ENCODERTWO);
+  Wire.endTransmission();
+
+  Wire.requestFrom(MD25ADDRESS, 4);                         // Request 4 bytes from MD25
+  while(Wire.available() < 4);                              // Wait for 4 bytes to become available
+  long poss2 = Wire.read();
+  poss2 <<= 8;
+  poss2 += Wire.read();
+  poss2 <<= 8;
+  poss2 += Wire.read();
+  poss2 <<= 8;
+  poss2  +=Wire.read();
+  delay(50);                                                // Wait to make sure everything is sent
+  return(poss2);
+}
+
+void stopMotor(){                                           // Function to stop motors
+  Wire.beginTransmission(MD25ADDRESS);
+  Wire.write(SPEED2);
+  Wire.write(128);                                           // Sends a value of 128 to motor 2 this value stops the motor
+  Wire.endTransmission();
+
+  Wire.beginTransmission(MD25ADDRESS);
+  Wire.write(SPEED1);
+  Wire.write(128);
+  Wire.endTransmission();
+}
+
+int getNavigationComand()
+{
+  command = 0;
+  if (Serial.available())
+    {
+      command = Serial.read();
+      switch (command)
+      {
+        case 49:
+         command = 1;
+        break;
+        case 50:
+          command = 2;
+        break;
+        case 51:
+          command = 3;
+        break;
+        case 52:
+          command = 4;
+        break;
+      }
+    }
+  return command;
+}
+
+void moveForward()
+{
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 2 at speed value stored in x
+  Wire.write(SPEED2);
+  Wire.write(50);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 1 at speed value stored in x
+  Wire.write(SPEED1);
+  Wire.write(50);
+  Wire.endTransmission();
+}
+
+void moveBackward()
+{
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 2 at speed value stored in x
+  Wire.write(SPEED2);
+  Wire.write(200);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 1 at speed value stored in x
+  Wire.write(SPEED1);
+  Wire.write(200);
+  Wire.endTransmission();
+}
+
+void turnLeft()
+{
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 2 at speed value stored in x
+  Wire.write(SPEED2);
+  Wire.write(200);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 1 at speed value stored in x
+  Wire.write(SPEED1);
+  Wire.write(50);
+  Wire.endTransmission();
+}
+
+void turnRight()
+{
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 2 at speed value stored in x
+  Wire.write(SPEED2);
+  Wire.write(50);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(MD25ADDRESS);                    // Drive motor 1 at speed value stored in x
+  Wire.write(SPEED1);
+  Wire.write(200);
+  Wire.endTransmission();
+}
